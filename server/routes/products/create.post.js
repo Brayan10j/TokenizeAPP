@@ -11,11 +11,12 @@ export default defineEventHandler(async (event) => {
       const web3 = new Web3(
         "wss://rpc-mumbai.maticvigil.com/ws/v1/09533f1130c95616c233e806d6a45473c38fbb70"
       );
-      const MyContract = new web3.eth.Contract(abi, process.env.CONTRACT);
+      const contractAddress = "0x839449406c454f8E839de0410e05aD0B6C8310C0"
+      const MyContract = new web3.eth.Contract(abi, contractAddress);
 
       let tx = {
         from: "0x800d5633013855484B0271784bddEA18f9eE162A",
-        to: process.env.CONTRACT,
+        to: contractAddress,
         data: MyContract.methods.mint(account, id, 1, []).encodeABI(),
         gasPrice: await web3.eth.getGasPrice(),
         gas: 500000,
