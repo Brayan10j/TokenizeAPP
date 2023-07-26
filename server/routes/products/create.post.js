@@ -1,30 +1,43 @@
 import { Web3 } from "web3";
 import abi from "@/public/abi.json";
 
-/**
+export default defineEventHandler(async (event) => {
+  /**
  * @openapi
- *    responses:
- *       200:
- *         description: Returns a mysterious string.
+ *  schemas:
+    Products:
+      required:
+        - id
+        - photoUrls
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+      xml:
+        name: product
+ * 
+ *    
+ * 
  */
 
-export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   if (query.apiKey) {
     const access = await useValidateApiKey(event, query.apiKey);
     if (access) {
       const client = useSupabaseClient(event);
-      const { id, metadata, account ,quantity } = await readBody(event);
+      const { id, metadata, account, quantity } = await readBody(event);
       const web3 = new Web3(
         "wss://rpc-mumbai.maticvigil.com/ws/v1/09533f1130c95616c233e806d6a45473c38fbb70"
       );
-      const contractAddress = "0x839449406c454f8E839de0410e05aD0B6C8310C0"
+      const contractAddress = "0x839449406c454f8E839de0410e05aD0B6C8310C0";
       const MyContract = new web3.eth.Contract(abi, contractAddress);
 
       let tx = {
         from: "0x800d5633013855484B0271784bddEA18f9eE162A",
         to: contractAddress,
-        data: MyContract.methods.mint(account, id, 1, []).encodeABI(),
+        data: MyContract.methods.mint(account, id, quantity, []).encodeABI(),
         gasPrice: await web3.eth.getGasPrice(),
         gas: 500000,
       };
@@ -45,7 +58,7 @@ export default defineEventHandler(async (event) => {
         .insert([{ id: id, data: metadata }])
         .select();
 
-      if (error) return error.message;
+      if (error) console.log(error.message);
 
       return {
         transactionExplorer:
