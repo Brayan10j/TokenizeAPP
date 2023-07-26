@@ -63,7 +63,7 @@ export default defineEventHandler(async (event) => {
       return {
         transactionExplorer:
           "https://mumbai.polygonscan.com/tx/" + transactionHash,
-        metadataLink: "https://localhost:3000/products/" + id,
+        metadataLink: "https://tokenizeapp-96cb63b9a877.herokuapp.com/products/" + id,
       };
     }
   } else {
