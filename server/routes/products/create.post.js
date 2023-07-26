@@ -1,6 +1,13 @@
 import { Web3 } from "web3";
 import abi from "@/public/abi.json";
 
+/**
+ * @openapi
+ *    responses:
+ *       200:
+ *         description: Returns a mysterious string.
+ */
+
 export default defineEventHandler(async (event) => {
   const query = getQuery(event);
   if (query.apiKey) {

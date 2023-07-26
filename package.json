@@ -16,7 +16,6 @@
     "nuxt": "^3.6.2"
   },
   "dependencies": {
-    "ganache": "^7.9.0",
     "nft.storage": "^7.1.0",
     "web3": "^4.0.2"
   }
