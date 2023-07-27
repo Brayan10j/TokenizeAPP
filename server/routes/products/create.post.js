@@ -23,6 +23,7 @@ export default defineEventHandler(async (event) => {
  */
 
   const query = getQuery(event);
+  const heders = getHeaders(event);
   if (query.apiKey) {
     const access = await useValidateApiKey(event, query.apiKey);
     if (access) {
