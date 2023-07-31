@@ -2,28 +2,8 @@ import { Web3 } from "web3";
 import abi from "@/public/abi.json";
 
 export default defineEventHandler(async (event) => {
-  /**
- * @openapi
- *  schemas:
-    Products:
-      required:
-        - id
-        - photoUrls
-      type: object
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-      xml:
-        name: product
- * 
- *    
- * 
- */
-
   const query = getQuery(event);
-  const heders = getHeaders(event);
+  const headers = getHeaders(event);
   if (query.apiKey) {
     const access = await useValidateApiKey(event, query.apiKey);
     if (access) {
