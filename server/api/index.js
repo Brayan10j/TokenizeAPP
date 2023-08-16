@@ -35,9 +35,9 @@ const client = createClient(
 
 const runtimeConfig = useRuntimeConfig();
 
-const bot = new Telegraf("6162797499:AAExYoP-qfu13iw0k69yfM13Vl2TVwvMAUQ");
+const bot = new Telegraf(process.env.BOT);
 const configuration = new Configuration({
-  apiKey: "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",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 const openai = new OpenAIApi(configuration);
 
