@@ -10,7 +10,6 @@ import { createClient } from "@supabase/supabase-js";
 
 import { PromptTemplate } from "langchain/prompts";
 export default defineEventHandler(() => {
-  console.log("entra handler x");
   return "sadasdadd";
 });
 
