@@ -5,6 +5,7 @@ import https from "https";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ConversationSummaryMemory } from "langchain/memory";
 import { LLMChain } from "langchain/chains";
+import gTTS from "gtts";
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -50,8 +51,8 @@ async function makeChatCompletion(message) {
   if (res.data.length > 0) {
     const history = res.data[0].history;
     await memory.saveContext(
-      { input: "that we have talked" },
-      { output: history }
+      { input: history },
+      { output: "conversation history check!" }
     );
   }
 
@@ -72,21 +73,22 @@ async function makeChatCompletion(message) {
   return res1;
 }
 
-bot.start((ctx) => ctx.reply("Welcome"));
-
-/* bot.start((ctx) =>
-  ctx.reply("Welcome", {
+bot.start(
+  async (ctx) => ctx.reply("Welcome")
+  /*   const res = await ctx.reply("Welcome", {
     reply_markup: {
       inline_keyboard: [
-        
-        [{ text: "Suprise me", callback_data: "suprise" }],
-
-        
-        [{ text: "Improve your brain", callback_data: "improve" }],
+        [
+          {
+            text: "pregunta",
+            callback_data: "get",
+          },
+        ],
       ],
     },
-  })
-);  */
+  });
+} */
+);
 
 bot.on("text", async (ctx) => {
   ctx.reply("Procesing ...");
@@ -111,19 +113,29 @@ bot.on("voice", async (context) => {
     response.pipe(writeStream);
 
     writeStream.on("finish", async () => {
-      console.log("Archivo guardado correctamente en:", "salida.ogg");
       const resp = await openai.createTranscription(
         fs.createReadStream("salida.ogg"),
         "whisper-1"
       );
-      context.reply(
-        await makeChatCompletion({
-          chat: {
-            id: context.update.message.chat.id,
-          },
-          text: resp.data.text,
-        })
-      );
+
+      const response = await makeChatCompletion({
+        chat: {
+          id: context.update.message.chat.id,
+        },
+        text: resp.data.text,
+      })
+
+    
+      const gtts = new gTTS(response.text);
+      await gtts.save("Voice.mp3", function (err, result) {
+        if (err) {
+          throw new Error(err);
+        }
+        console.log("Text to speech converted!");
+        context.sendAudio({ source: "Voice.mp3" });
+      });
+
+      console.log("Archivo guardado correctamente en:", "salida.ogg");
     });
 
     writeStream.on("error", (err) => {
@@ -133,5 +145,9 @@ bot.on("voice", async (context) => {
 });
 
 bot.action("suprise", async (ctx) => {});
+
+bot.action("get", async (ctx) => {
+  console.log(ctx.state);
+});
 
 bot.launch();
