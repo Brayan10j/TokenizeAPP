@@ -5,7 +5,8 @@ import https from "https";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ConversationSummaryMemory } from "langchain/memory";
 import { LLMChain } from "langchain/chains";
-import gTTS from "gtts";
+import { gTTS } from "simple-gtts";
+import langdetect from "langdetect";
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -14,14 +15,23 @@ export default defineEventHandler(() => {
   return "sadasdadd";
 });
 
-const prompt =
-  PromptTemplate.fromTemplate(`The following is a friendly conversation between a human and an AI. The AI is talkative and provides lots of specific details from its context. If the AI does not know the answer to a question, it truthfully says it does not know.
+const prompt = PromptTemplate.fromTemplate(`
   Current conversation:
   {history}
   Human: {input}
   AI:`);
 
-const model = new ChatOpenAI();
+const model = new ChatOpenAI(
+  {},
+  {
+    basePath: "https://oai.hconeai.com/v1",
+    baseOptions: {
+      headers: {
+        "Helicone-Auth": "Bearer sk-t3m5jia-4rquzpi-sewvspi-mxaodyq",
+      },
+    },
+  }
+);
 
 const client = createClient(
   process.env.SUPABASE_URL,
@@ -45,7 +55,7 @@ async function makeChatCompletion(message) {
   let res = await client.from("chats").select("*").eq("id", message.chat.id);
 
   const memory = new ConversationSummaryMemory({
-    llm: new ChatOpenAI({ temperature: 0 }),
+    llm: new ChatOpenAI(),
   });
 
   if (res.data.length > 0) {
@@ -117,24 +127,18 @@ bot.on("voice", async (context) => {
         fs.createReadStream("salida.ogg"),
         "whisper-1"
       );
-
       const response = await makeChatCompletion({
         chat: {
           id: context.update.message.chat.id,
         },
         text: resp.data.text,
-      })
-
-    
-      const gtts = new gTTS(response.text);
-      await gtts.save("Voice.mp3", function (err, result) {
-        if (err) {
-          throw new Error(err);
-        }
-        console.log("Text to speech converted!");
-        context.sendAudio({ source: "Voice.mp3" });
       });
-
+      await gTTS(response.text, {
+        path: "Voice.mp3",
+        voice: "" ,
+        lang: langdetect.detectOne(response.text),
+      });
+      context.sendAudio({ source: "Voice.mp3" });
       console.log("Archivo guardado correctamente en:", "salida.ogg");
     });
 
