@@ -27,7 +27,7 @@ const model = new ChatOpenAI(
     basePath: "https://oai.hconeai.com/v1",
     baseOptions: {
       headers: {
-        "Helicone-Auth": "Bearer sk-t3m5jia-4rquzpi-sewvspi-mxaodyq",
+        "Helicone-Auth": "Bearer " + process.env.HELICONE_API_KEY,
       },
     },
   }
@@ -55,14 +55,14 @@ async function makeChatCompletion(message) {
   let res = await client.from("chats").select("*").eq("id", message.chat.id);
 
   const memory = new ConversationSummaryMemory({
-    llm: new ChatOpenAI(),
+    llm: new ChatOpenAI({ temperature: 0 }),
   });
 
   if (res.data.length > 0) {
     const history = res.data[0].history;
     await memory.saveContext(
       { input: history },
-      { output: "conversation history check!" }
+      { output: "conversation history" }
     );
   }
 
@@ -135,7 +135,6 @@ bot.on("voice", async (context) => {
       });
       await gTTS(response.text, {
         path: "Voice.mp3",
-        voice: "" ,
         lang: langdetect.detectOne(response.text),
       });
       context.sendAudio({ source: "Voice.mp3" });
