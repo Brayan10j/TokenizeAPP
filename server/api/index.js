@@ -22,7 +22,7 @@ const prompt = PromptTemplate.fromTemplate(`
   AI:`);
 
 const model = new ChatOpenAI(
-  {},
+  {}/* ,
   {
     basePath: "https://oai.hconeai.com/v1",
     baseOptions: {
@@ -30,7 +30,7 @@ const model = new ChatOpenAI(
         "Helicone-Auth": "Bearer " + process.env.HELICONE_API_KEY,
       },
     },
-  }
+  } */
 );
 
 const client = createClient(
