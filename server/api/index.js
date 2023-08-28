@@ -5,8 +5,8 @@ import https from "https";
 import { ChatOpenAI } from "langchain/chat_models/openai";
 import { ConversationSummaryMemory } from "langchain/memory";
 import { LLMChain } from "langchain/chains";
-import { gTTS } from "simple-gtts";
-import langdetect from "langdetect";
+//import { gTTS } from "simple-gtts";
+//import langdetect from "langdetect";
 
 import { createClient } from "@supabase/supabase-js";
 
@@ -16,13 +16,14 @@ export default defineEventHandler(() => {
 });
 
 const prompt = PromptTemplate.fromTemplate(`
-  Current conversation:
+  Conversation history:
   {history}
-  Human: {input}
+  Human: 
+  {input}
   AI:`);
 
 const model = new ChatOpenAI(
-  {}/* ,
+  {} /* ,
   {
     basePath: "https://oai.hconeai.com/v1",
     baseOptions: {
@@ -133,11 +134,12 @@ bot.on("voice", async (context) => {
         },
         text: resp.data.text,
       });
-      await gTTS(response.text, {
+      context.reply(response.text);
+      /* await gTTS(response.text, {
         path: "Voice.mp3",
         lang: langdetect.detectOne(response.text),
       });
-      context.sendAudio({ source: "Voice.mp3" });
+      context.sendAudio({ source: "Voice.mp3" }); */
       console.log("Archivo guardado correctamente en:", "salida.ogg");
     });
 
@@ -153,4 +155,19 @@ bot.action("get", async (ctx) => {
   console.log(ctx.state);
 });
 
-bot.launch();
+
+if(process.env.NODE_ENV !== "production"){
+  bot.launch({
+  })
+}else {
+  bot.launch({
+    webhook: {
+      domain: 'https://tokenizeapp-96cb63b9a877.herokuapp.com/api/',
+      port: process.env.PORT
+    }
+  }) 
+}
+
+// Enable graceful stop
+process.once("SIGINT", () => bot.stop("SIGINT"));
+process.once("SIGTERM", () => bot.stop("SIGTERM"));
