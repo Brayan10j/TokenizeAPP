@@ -166,10 +166,10 @@ if (process.env.NODE_ENV == "production") {
     .launch({
       webhook: {
         domain: "https://tokenizeapp-96cb63b9a877.herokuapp.com/api/",
-        port: process.env.PORT,
+        port: process.env.PORT || 80,
       },
     })
-    .then(() => console.log("Webhook bot listening on port", port));
+    .then(() => console.log("Webhook bot listening on port", process.env.PORT));
 } else {
   // if local use Long-polling
   bot.launch().then(() => {
