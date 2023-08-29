@@ -13,7 +13,8 @@ import { createClient } from "@supabase/supabase-js";
 import { PromptTemplate } from "langchain/prompts";
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  return body;
+  console.log(body)
+  return "test";
 });
 
 const prompt = PromptTemplate.fromTemplate(`
