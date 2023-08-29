@@ -155,19 +155,7 @@ bot.action("get", async (ctx) => {
   console.log(ctx.state);
 });
 
-
-if(process.env.NODE_ENV !== "production"){
-  bot.launch({
-  })
-}else {
-  bot.launch({
-    webhook: {
-      domain: 'https://tokenizeapp-96cb63b9a877.herokuapp.com/api/',
-      port: process.env.PORT
-    }
-  }) 
-}
-
+bot.launch();
 // Enable graceful stop
 process.once("SIGINT", () => bot.stop("SIGINT"));
 process.once("SIGTERM", () => bot.stop("SIGTERM"));
