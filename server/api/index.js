@@ -12,8 +12,7 @@ import { createClient } from "@supabase/supabase-js";
 
 import { PromptTemplate } from "langchain/prompts";
 export default defineEventHandler(async (event) => {
-  const body = await readBody(event);
-  console.log(body)
+  
   return "test";
 });
 
@@ -166,7 +165,7 @@ if (process.env.NODE_ENV == "production") {
   bot
     .launch({
       webhook: {
-        domain: "https://tokenizeapp-96cb63b9a877.herokuapp.com/api/",
+        domain: "https://tokenizeapp-96cb63b9a877.herokuapp.com/api/bot",
         port: process.env.PORT || 80,
       },
     })
